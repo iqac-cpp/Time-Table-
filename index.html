@@ -894,6 +894,18 @@
     color: var(--print-subject-color);
   }
 
+  .clean-print-subject-link {
+    display: block;
+    text-decoration: none !important;
+    -webkit-text-decoration: none !important;
+    color: var(--print-subject-color);
+  }
+
+  .clean-print-subject-link:hover {
+    text-decoration: none !important;
+    -webkit-text-decoration: none !important;
+  }
+
   .clean-print-lecturer {
     font-weight: 700;
     font-size: 12px;
@@ -2084,6 +2096,24 @@
       line-height: 1.04 !important;
       overflow-wrap: anywhere !important;
       background: transparent !important;
+    }
+
+    .clean-print-subject-link {
+      display: block !important;
+      color: var(--print-subject-color) !important;
+      text-decoration: none !important;
+    }
+
+    .clean-print-subject-link,
+    .clean-print-subject-link:visited,
+    .clean-print-subject-link:hover,
+    .clean-print-subject-link:active {
+      display: block !important;
+      color: var(--print-subject-color) !important;
+      text-decoration: none !important;
+      -webkit-text-decoration: none !important;
+      border-bottom: 0 !important;
+      box-shadow: none !important;
     }
 
     .clean-print-subject {
@@ -3823,9 +3853,21 @@ const COURSE_LIST = [
       ? row.course || "Course not mentioned"
       : row.lecturer || "Lecturer not mentioned";
 
+    /*
+     * Clickable syllabus in Print / Save PDF:
+     * If the row has a syllabus URL, the subject becomes a real hyperlink.
+     * When students open the saved PDF and tap the subject, it opens the syllabus.
+     */
+    const syllabusUrl = row.syllabusUrl ? normalizeSyllabusUrl(row.syllabusUrl) : "";
+    const subjectText = escapeHtml(row.subject || "Subject not mentioned");
+
+    const subjectHtml = syllabusUrl
+      ? `<a class="clean-print-subject clean-print-subject-link" href="${escapeHtml(syllabusUrl)}" target="_blank" rel="noopener" style="text-decoration:none !important; -webkit-text-decoration:none !important; color:var(--print-subject-color);">${subjectText}</a>`
+      : `<div class="clean-print-subject">${subjectText}</div>`;
+
     return `
       <div class="clean-print-block" style="--print-subject-color:${style.color}; --print-subject-border:${style.border};">
-        <div class="clean-print-subject">${escapeHtml(row.subject || "Subject not mentioned")}</div>
+        ${subjectHtml}
         <div class="clean-print-lecturer">${escapeHtml(secondLine)}</div>
       </div>
     `;
